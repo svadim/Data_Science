@@ -1,5 +1,30 @@
 # Week 3. -----------------------------------------------------------------
 
+      # Debugging Tools
+printmessage <- function(x) {
+      if(x > 0)
+            print("x is greather than zero")
+      else
+            print("x is less than or equal to zero")
+      invisible(x)
+}
+
+printmessage2 <- function(x) {
+      if(is.na(x))
+            print("x is missing value")
+       else if(x > 0)
+            print("x is greather than zero")
+       else 
+            print("x is less than or equal to zero")
+      invisible(x)
+}
+
+lm(y ~ x)
+traceback()
+
+debug(lm)
+lm(y ~ x)
+
       #split
 
 x <- c(rnorm(10), runif(10), rnorm(10,1))
