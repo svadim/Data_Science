@@ -1,11 +1,67 @@
 
 # Week 3 ------------------------------------------------------------------
 
+## Reshaping data**************************************************************
+library(reshape)
+library(reshape2)
+mtcars$carname <- rownames(mtcars)
+carMelt <- melt(mtcars, id=c("carname", "gear", "cyl"), measure.var=c("mpg", "hp"))
+cylDate <- dcast(carMelt, cyl ~ variable)
+cylDate <- dcast(carMelt, cyl ~ variable, mean)
+
+library(plyr)
+tapply(InsectSprays$count, InsectSprays$spray, sum)
+spIns <- split(InsectSprays$count, InsectSprays$spray)
+sprCount <- lapply(spIns, sum)
+unlist(sprCount)
+sapply(spIns, sum)
+ddply(InsectSprays, .(spray), summarize, sum=sum(count))
+spraySums <- ddply(InsectSprays, .(spray), summarize, sum=ave(count, FUN=sum))
+
+
+## Creating new variables******************************************************
+if(!file.exists("data")) dir.create("data")
+url <- "https://data.baltimorecity.gov/api/views/k5ry-ef3g/rows.csv?accessType=DOWNLOAD"
+download.file(url, "data/restaurants.csv", mode = "wb")
+restData <- read.csv("data/restaurants.csv")
+
+s1 <-seq(1, 10, by=2)
+s2 <- seq(1, 10, length=3)
+x <- c(1, 3, 10, 25, 40)
+seq(along=x)
+
+restData$nearMe <- restData$neighborhood %in% c("Roland Park", "Homeland")
+table(restData$nearMe)
+
+restData$zipWrong <- ifelse(restData$zipCode < 0, TRUE, FALSE)
+table(restData$zipWrong, restData$zipCode < 0)
+
+restData$zipGroups <- cut(restData$zipCode, breaks=quantile(restData$zipCode))
+table(restData$zipGroups)
+table(restData$zipGroups, restData$zipCode)
+library(Hmisc)
+restData$zipGroups <- cut2(restData$zipCode, g=4)
+table(restData$zipGroups)
+
+restData$zsf <- factor(restData$zipCode)
+restData$zsf[1:10]
+
+yesno <- sample(c("yes", "no"), size=10, replace=TRUE)
+yesnofac <- factor(yesno, levels=c("yes", "no"))
+relevel(yesnofac, ref="yes")
+as.numeric(yesnofac)
+
+library(plyr)
+restData2 <- mutate(restData, zipGroups=cut2(zipCode, g=4))
+table(restData2$zipGroups)
+
+
 ##Summarizing data ************************************************************
 if(!file.exists("data")) dir.create("data")
 url <- "https://data.baltimorecity.gov/api/views/k5ry-ef3g/rows.csv?accessType=DOWNLOAD"
 download.file(url, "data/restaurants.csv", mode = "wb")
 restData <- read.csv("data/restaurants.csv")
+
 head(restData, n=3)
 tail(restData, n=3)
 summary(restData)
