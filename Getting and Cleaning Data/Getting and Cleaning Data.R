@@ -1,6 +1,72 @@
 
 # Week 3 ------------------------------------------------------------------
 
+## Merging data ***************************************************************
+
+if(!file.exists("data")){dir.create("data")}
+fileUrl1 <- "https://dl.dropboxusercontent.com/u/7710864/data/reviews-apr29.csv"
+fileUrl2 <- "https://dl.dropboxusercontent.com/u/7710864/data/solutions-apr29.csv"
+download.file(fileUrl1, "data/reviews.csv", mode="wb")
+download.file(fileUrl2, "data/solutions.csv", mode="wb")
+reviews <- read.csv("data/reviews.csv")
+solutions <- read.csv("data/solutions.csv")
+head(reviews,2)
+head(solutions,2)
+names(reviews)
+names(solutions)
+
+mergedData = merge(reviews,solutions,by.x="solution_id",by.y="id",all=TRUE)
+head(mergedData)
+
+intersect(names(solutions),names(reviews))
+mergedData2 = merge(reviews,solutions,all=TRUE)
+head(mergedData2)
+
+library(plyr)
+df1 = data.frame(id=sample(1:10),x=rnorm(10))
+df2 = data.frame(id=sample(1:10),y=rnorm(10))
+arrange(join(df1,df2),id)
+
+df3 = data.frame(id=sample(1:10),z=rnorm(10))
+dfList = list(df1,df2,df3)
+join_all(dfList)
+
+## dplyr **********************************************************************
+library(dplyr)
+chicago <- readRDS("chicago.rds")
+dim(chicago)
+str(chicago)
+names(chicago)
+head(select(chicago, city:dptp))
+head(select(chicago, -(city:dptp)))
+i <- match("city", names(chicago))
+j <- match("dptp", names(chicago))
+head(chicago[, -(i:j)])
+
+chic.f <- filter(chicago, pm25tmean2 > 30)
+chic.f <- filter(chicago, pm25tmean2 > 30 & tmpd > 80)
+
+chicago <- arrange(chicago, date)
+chicago <- arrange(chicago, desc(date))
+
+chicago <- rename(chicago, pm25=pm25tmean2, dewpoint=dptp)
+
+chicago <- mutate(chicago, pm25detrend=pm25-mean(pm25, na.rm=TRUE))
+head(select(chicago, pm25, pm25detrend))
+chicago <- mutate(chicago, tempcat = factor(1*(tmpd>80), labels=c("cold", "hot")))
+hotcold <- group_by(chicago, tempcat)
+summarize(hotcold, pm25=mean(pm25, na.rm=TRUE), o3=max(o3tmean2), no2=median(no2tmean2))
+chicago <- mutate(chicago, year=as.POSIXlt(date)$year+1900)
+years <- group_by(chicago, year)
+summarize(years, pm25=mean(pm25, na.rm=TRUE), o3=max(o3tmean2), no2=median(no2tmean2))
+
+chicago %>% mutate(month=as.POSIXlt(date)$mon +1)%>%
+      group_by(month)%>%
+      summarize(pm25=mean(pm25,na.rm=TRUE), 
+                o3 = max(o3tmean2, na.rm = TRUE), 
+                no2=median(no2tmean2, na.rm =TRUE))
+
+
 ## Reshaping data**************************************************************
 library(reshape)
 library(reshape2)
