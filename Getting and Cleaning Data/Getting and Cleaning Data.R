@@ -1,6 +1,43 @@
 
 # Week 3 ------------------------------------------------------------------
 
+## Quiz 3
+
+url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv"
+download.file(url, "data.csv")
+data <- read.csv("data.csv")
+agricultureLogical <- data$ACR==3&data$AGS==6
+which(agricultureLogical)
+
+library(jpeg)
+url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fjeff.jpg"
+download.file(url, "picture.jpg", mode="wb")
+jpeg <- readJPEG("picture.jpg", native = TRUE)
+quantile(jpeg, probs = c(0.3, 0.8))
+
+library(dplyr)
+url1 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv"
+url2 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv"
+download.file(url1, "file1.csv", mode="wb")
+download.file(url2, "file2.csv", mode="wb")
+file1 <- read.csv("file1.csv", stringsAsFactors=F)
+file2 <- read.csv("file2.csv", stringsAsFactors=F)
+rank <- match(file1[,2], as.character(c(1:190)))
+file1 <- file1[!is.na(rank),]
+file1[,2] <- as.numeric(file1[,2])
+data <- merge(file1, file2, by.x="X", by.y="CountryCode")
+data_arr <- arrange(data, desc(data[,2]))
+nrow(data)
+data_arr[13,4]
+
+data_arr %>% group_by(Income.Group) %>%
+      summarize(mean(Gross.domestic.product.2012))
+
+library(Hmisc)
+r <- cut2(data_arr[,2], g=5)
+table(r, data_arr$Income.Group)
+
+
 ## Merging data ***************************************************************
 
 if(!file.exists("data")){dir.create("data")}
