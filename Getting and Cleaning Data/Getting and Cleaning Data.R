@@ -1,4 +1,47 @@
 
+# Week 4 ------------------------------------------------------------------
+
+
+## Editing text variables
+
+if(!file.exists("data")){dir.create("data")}
+fileUrl <- "https://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
+download.file(fileUrl,destfile="data/cameras.csv", mode="wb")
+cameraData <- read.csv("data/cameras.csv")
+names(cameraData)
+tolower(names(cameraData))
+toupper(names(cameraData))
+
+splitNames <- strsplit(names(cameraData), "\\.")
+firstElement <- function(x){x[1]}
+sapply(splitNames, firstElement)
+
+fileUrl1 <- "https://dl.dropboxusercontent.com/u/7710864/data/reviews-apr29.csv"
+fileUrl2 <- "https://dl.dropboxusercontent.com/u/7710864/data/solutions-apr29.csv"
+download.file(fileUrl1,destfile="data/reviews.csv",mode="wb")
+download.file(fileUrl2,destfile="data/solutions.csv",mode="wb")
+reviews <- read.csv("data/reviews.csv")
+solutions <- read.csv("data/solutions.csv")
+sub("_", "", names(reviews))
+
+testName <- "this_is_a_text"
+sub("_", "", testName)
+gsub("_", "", testName)
+
+grep("Alameda", cameraData$intersection)
+table(grepl("Alameda", cameraData$intersection))
+cameraData2 <- cameraData[!grepl("Alameda", cameraData$intersection),]
+
+grep("Alameda", cameraData$intersection, value = TRUE)
+length(grep("JeffStreet", cameraData$intersection))
+
+library(stringr)
+nchar("JeffStreet")
+substr("JeffStreet", 1, 7)
+paste("Jeff", "Street")
+paste0("Jeff", "Street")
+str_trim("Jeff     ")
+
 # Week 3 ------------------------------------------------------------------
 
 ## Quiz 3
