@@ -1,8 +1,60 @@
 
 # Week 4 ------------------------------------------------------------------
 
+## Quiz************************************************************************
 
-## Editing text variables
+url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv"
+download.file(url, "data.csv")
+data <- read.csv("data.csv")
+result <- strsplit(names(data), "wgtp")[123]
+
+url1 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv"
+download.file(url1, "file1.csv", mode="wb")
+file1 <- read.csv("file1.csv", stringsAsFactors=F)
+rank <- match(file1[,2], as.character(c(1:190)))
+file1 <- file1[!is.na(rank),]
+file1[,2] <- as.numeric(file1[,2])
+result <- gsub(",", "", file1$X.3)
+result <- gsub("[^0-9]", "", result)
+result <- mean(as.numeric(result))
+result <- sum(grepl("^United", file1$X.2))
+
+library(dplyr)
+url1 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv"
+url2 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv"
+download.file(url1, "file1.csv", mode="wb")
+download.file(url2, "file2.csv", mode="wb")
+file1 <- read.csv("file1.csv", stringsAsFactors=F)
+file2 <- read.csv("file2.csv", stringsAsFactors=F)
+rank <- match(file1[,2], as.character(c(1:190)))
+file1 <- file1[!is.na(rank),]
+file1[,2] <- as.numeric(file1[,2])
+data <- merge(file1, file2, by.x="X", by.y="CountryCode")
+result <- sum(grepl("Fiscal year end: June", data$Special.Notes))
+
+library(lubridate)
+library(quantmod)
+amzn = getSymbols("AMZN",auto.assign=FALSE)
+sampleTimes = index(amzn)
+result1 <- sum(year(sampleTimes)==2012)
+result2 <- sum(year(sampleTimes)==2012 & weekdays(sampleTimes)=="понедельник")
+
+
+## Working with dates**********************************************************
+
+d1 <- date()
+d2 <- Sys.Date()
+format(d2, "%a %b %d")
+weekdays(d2)
+months(d2)
+julian(d2)
+
+library(lubridate)
+ymd(20140226)
+ymd_hms("2011-08-03 10:15:03")
+ymd_hms("2011-08-03 10:15:03",tz="Pacific/Auckland")
+
+## Editing text variables*****************************************************
 
 if(!file.exists("data")){dir.create("data")}
 fileUrl <- "https://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
@@ -44,7 +96,7 @@ str_trim("Jeff     ")
 
 # Week 3 ------------------------------------------------------------------
 
-## Quiz 3
+## Quiz************************************************************************
 
 url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv"
 download.file(url, "data.csv")
