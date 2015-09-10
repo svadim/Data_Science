@@ -1,4 +1,140 @@
 
+# Week 3 ------------------------------------------------------------------
+
+## Dimension Reduction ********************************************************
+
+set.seed(12345)
+par(mar = rep(0.2, 4))
+dataMatrix <- matrix(rnorm(400), nrow = 40)
+image(1:10, 1:40, t(dataMatrix)[, nrow(dataMatrix):1])
+par(mar = rep(0.2, 4))
+heatmap(dataMatrix)
+
+set.seed(678910)
+for (i in 1:40) {
+      # flip a coin
+      coinFlip <- rbinom(1, size = 1, prob = 0.5)
+      # if coin is heads add a common pattern to that row
+      if (coinFlip) {
+            dataMatrix[i, ] <- dataMatrix[i, ] + rep(c(0, 3), each = 5)
+      }
+}
+par(mar = rep(0.2, 4))
+image(1:10, 1:40, t(dataMatrix)[, nrow(dataMatrix):1])
+par(mar = rep(0.2, 4))
+heatmap(dataMatrix)
+
+hh <- hclust(dist(dataMatrix))
+dataMatrixOrdered <- dataMatrix[hh$order, ]
+par(mfrow = c(1, 3))
+image(t(dataMatrixOrdered)[, nrow(dataMatrixOrdered):1])
+plot(rowMeans(dataMatrixOrdered), 40:1, , xlab = "Row Mean", ylab = "Row", pch = 19)
+plot(colMeans(dataMatrixOrdered), xlab = "Column", ylab = "Column Mean", pch = 19)
+
+
+
+## K-means clustering *********************************************************
+set.seed(678910)
+set.seed(1234)
+par(mar = c(0, 0, 0, 0))
+x <- rnorm(12, mean = rep(1:3, each = 4), sd = 0.2)
+y <- rnorm(12, mean = rep(c(1, 2, 1), each = 4), sd = 0.2)
+plot(x, y, col = "blue", pch = 19, cex = 2)
+text(x + 0.05, y + 0.05, labels = as.character(1:12))
+dataFrame <- data.frame(x, y)
+kmeansObj <- kmeans(dataFrame, centers = 3)
+names(kmeansObj)
+par(mar = rep(0.2, 4))
+plot(x, y, col = kmeansObj$cluster, pch = 19, cex = 2)
+points(kmeansObj$centers, col = 1:3, pch = 3, cex = 3, lwd = 3)
+
+set.seed(1234)
+dataMatrix <- as.matrix(dataFrame)[sample(1:12), ]
+kmeansObj2 <- kmeans(dataMatrix, centers = 3)
+par(mfrow = c(1, 2), mar = c(2, 4, 0.1, 0.1))
+image(t(dataMatrix)[, nrow(dataMatrix):1], yaxt = "n")
+image(t(dataMatrix)[, order(kmeansObj$cluster)], yaxt = "n")
+
+## Hierarchical Clustering ****************************************************
+
+set.seed(1234)
+par(mar=c(0,0,0,0))
+x <- rnorm(12, mean=rep(1:3, each=4), sd=0.2)
+y <- rnorm(12, mean=rep(c(1,2,1), each=4), sd=0.2)
+plot(x, y, col="blue", pch=19, cex=2)
+text(x+0.05, y+0.05, labels=as.character(1:12))
+dataFrame <- data.frame(x=x, y=y)
+distxy <- dist(dataFrame)
+hClustering <- hclust(distxy)
+plot(hClustering)
+
+myplclust <- function(hclust, lab = hclust$labels, lab.col = rep(1, length(hclust$labels)), 
+                      hang = 0.1, ...) {
+      ## modifiction of plclust for plotting hclust objects *in colour*!  Copyright
+      ## Eva KF Chan 2009 Arguments: hclust: hclust object lab: a character vector
+      ## of labels of the leaves of the tree lab.col: colour for the labels;
+      ## NA=default device foreground colour hang: as in hclust & plclust Side
+      ## effect: A display of hierarchical cluster with coloured leaf labels.
+      y <- rep(hclust$height, 2)
+      x <- as.numeric(hclust$merge)
+      y <- y[which(x < 0)]
+      x <- x[which(x < 0)]
+      x <- abs(x)
+      y <- y[order(x)]
+      x <- x[order(x)]
+      plot(hclust, labels = FALSE, hang = hang, ...)
+      text(x = x, y = y[hclust$order] - (max(hclust$height) * hang), labels = lab[hclust$order], 
+           col = lab.col[hclust$order], srt = 90, adj = c(1, 0.5), xpd = NA, ...)
+}
+myplclust(hClustering, lab = rep(1:3, each = 4), lab.col = rep(1:3, each = 4))
+
+dataFrame <- data.frame(x = x, y = y)
+set.seed(143)
+dataMatrix <- as.matrix(dataFrame)[sample(1:12), ]
+heatmap(dataMatrix)
+
+# Week 2 ------------------------------------------------------------------
+
+## ggplo2 *********************************************************************
+
+library(ggplot2)
+qplot(displ, hwy, data=mpg)
+qplot(displ, hwy, data=mpg, color=drv)
+qplot(displ, hwy, data=mpg, geom=c("point", "smooth"))
+qplot(hwy, data=mpg, fill=drv)
+qplot(displ, hwy, data=mpg, facets=.~drv)
+qplot(hwy, data=mpg, facets=drv~., binwidth=2)
+
+## Lattice plotting system ****************************************************
+
+library(lattice)
+library(datasets)
+xyplot(Ozone~Wind, data=airquality)
+
+airquality <- transform(airquality, Month=factor(Month))
+xyplot(Ozone ~ Wind | Month, data=airquality, layout=c(5,1))
+
+p <- xyplot(Ozone ~ Wind, data=airquality)
+print(p)
+
+set.seed(10)
+x <- rnorm(100)
+f <- rep(0:1, each=50)
+y <- x+f-f*x+rnorm(100, sd=0.5)
+f <- factor(f, labels=c("Group 1", "Group 2"))
+xyplot(y~x | f, layout=c(2,1))
+
+xyplot(y~x|f, panel=function(x,y, ...){
+      panel.xyplot(x, y, ...)
+      panel.abline(h=median(y), lty=2)
+})
+
+xyplot(y~x|f, panel=function(x,y, ...){
+      panel.xyplot(x, y, ...)
+      panel.lmline(x, y, col=2)
+})
+
+
 # Week 1 ------------------------------------------------------------------
 
 ## Exploratory Graphs *********************************************************
